@@ -159,6 +159,14 @@ class RSA: Crypto {
         self.p = p
         self.q = q
     }
+    func power(x: Int, y: Int)-> Int{
+       var total = 1
+        for _ in 0..<y{
+            total *= x
+        }
+        return total
+    }
+    
 /*:
  ## Implementation of RSA.publicKey() and RSA.encrypt() */
     // The public key is used for encryption.
@@ -190,14 +198,27 @@ class RSA: Crypto {
  ## Implementation of RSA.privateKey() and RSA.decrypt() */
     // The private key is used for decryption.
     func privateKey() -> PrivateKey {
-        return PrivateKey(decryptionExponent: 2, modulus: 3)
+        let modulus = p * q
+        let f_n = (p - 1) * (q - 1)
+        let coprimeOptions = coprimes(f_n)
+        
+        let publicEncyrptKey = self.publicKey().encryptionExponent
+        var decryptionExponent = 0
+        
+        for coprimes in coprimeOptions {
+            if (coprimes * publicEncyrptKey) % f_n == 1 {
+                decryptionExponent = coprimes
+            }
+        }
+        return PrivateKey(decryptionExponent: decryptionExponent, modulus: modulus)
     }
+
     
     // Decrypts cipherValue using the private key. Returns the plain value.
     func decrypt(cipherValue: Int) -> Int {
-        return 0
+        let privateKey = self.privateKey()
+        return (power(cipherValue, y: privateKey.decryptionExponent)) % privateKey.modulus
     }
-    
 }
 /*:
  ## Unit tests that Run Automatically */
