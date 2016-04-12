@@ -159,6 +159,9 @@ class RSA: Crypto {
         self.p = p
         self.q = q
     }
+    
+    //For some reason, pow(x,y) does not work when I try to implement it into my decrypt function
+    //So I made my own power function
     func power(x: Int, y: Int)-> Int{
        var total = 1
         for _ in 0..<y{
